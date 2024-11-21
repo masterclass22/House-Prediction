@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Room Details Form</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Base styles */
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("https://images.unsplash.com/photo-1572120360610-d971b9d7767c?fm=jpg&q=60&w=3000");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        opacity: 0; /* Start invisible */
+        transform: translateY(20px); /* Start slightly lower */
+        animation: fadeInUp 0.5s forwards; /* Animation applied */
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: transform 0.2s, background-color 0.2s;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #218838;
+        transform: scale(1.05);
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition: border-color 0.3s;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      select:focus {
+        border-color: #28a745; /* Change border color on focus */
+      }
+
+      .error {
+        color: red;
+        font-size: 14px;
+        margin-top: -15px;
+        margin-bottom: 15px;
+      }
+
+      .summary {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #e9ecef;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: none; /* Initially hidden */
+      }
+
+      /* Video styles */
+      .video-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
+        height: 200px;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        animation: slideIn 1s forwards; /* Slide-in animation */
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(100px); /* Start from below */
+          opacity: 0; /* Start invisible */
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1; /* Fade in */
+        }
+      }
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Fill the Basic Requirements</h2>
+      <form id="real_estate_form">
+        <div class="form-group">
+          <label for="accommodationType">Type of Accommodation:</label>
+          <select id="accommodationType" name="accommodationType" required>
+            <option value="">Select Type</option>
+            <option value="flat">Flat</option>
+            <option value="villa">Villa</option>
+            <option value="apartment">Apartment</option>
+            <option value="studio">Studio</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bhk">BHK Type:</label>
+          <select id="bhk" name="bhk" required>
+            <option value="0">Select BHK</option>
+            <option value="1">1 BHK</option>
+            <option value="2">2 BHK</option>
+            <option value="3">3 BHK</option>
+            <option value="4">4 BHK</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="amenities">Preferred Amenities:</label>
+          <select id="amenities" name="amenities" required >
+            <option value="wifi">WiFi</option>
+            <option value="ac">Air Conditioning</option>
+            <option value="parking">Parking</option>
+            <option value="laundry">Laundry</option>
+            <option value="gym">Gym</option>
+            <option value="pool">Swimming Pool</option>
+            <option value="petFriendly">Pet Friendly</option>
+            <option value="furnished">Furnished</option>
+          </select>
+        </div>
+
+        <div class="error" id="amenitiesError" style="display: none">
+          Please select at least one amenity.
+        </div>
+
+        <div class="form-group">
+          <label for="bathroomSize"> No.of Bathroom required:</label>
+          <input
+            type="number"
+            id="bathroomSize"
+            name="bedrooms"
+            min="1"
+            max="10"
+            placeholder="Enter size in sq.ft"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="size">Room Size (in sq.ft):</label>
+          <input
+            type="number"
+            id="size"
+            name="size"
+            min="100"
+            max="5000"
+            placeholder="Enter size in sq.ft"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="location">Preferred Location in Bangalore:</label>
+          <select id="location" name="location" required>
+            {% for location in locations %}
+              <option value={{location}}>{{ location }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        
+        <button type="submit">Predict</button>
+        
+      </form>
+
+      <div  id="summary"></div>
+    </div>
+
+    <!-- Video Section -->
+    <div class="video-container">
+      <iframe
+        src="https://player.vimeo.com/video/226515745?autoplay=1&muted=1"
+        width="400"
+        height="700"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+
+    <script>
+      document.getElementById("real_estate_form").addEventListener("submit", async function (e) {
+            e.preventDefault(); // Prevent form from submitting normally
+            console.log("hi")
+          const realEstateData = {
+            location: document.getElementById("location").value,
+            total_sqft: document.getElementById("size").value,
+            bath: document.getElementById("bathroomSize").value,
+            bhk: document.getElementById("bhk").value,
+          };
+          const response = await fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(realEstateData),
+          });
+          const result = await response.json();
+          document.getElementById("summary").innerText =
+            "Predicted Price : " + "₹" + Math.abs(Math.round(result.predicted_price * 1000, 2))
+
+        });
+    </script>
+  </body>
+</html>
