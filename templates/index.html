@@ -8,8 +8,15 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    <!-- Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
     <style>
-      /* Base styles */
+      /* Your existing styles */
       body {
         font-family: Arial, sans-serif;
         background-image: url("https://images.unsplash.com/photo-1572120360610-d971b9d7767c?fm=jpg&q=60&w=3000");
@@ -27,9 +34,9 @@
         padding: 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         border-radius: 8px;
-        opacity: 0; /* Start invisible */
-        transform: translateY(20px); /* Start slightly lower */
-        animation: fadeInUp 0.5s forwards; /* Animation applied */
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.5s forwards;
       }
 
       @keyframes fadeInUp {
@@ -48,12 +55,10 @@
         border-radius: 4px;
         font-size: 16px;
         cursor: pointer;
-        transition: transform 0.2s, background-color 0.2s;
       }
 
       input[type="submit"]:hover {
         background-color: #218838;
-        transform: scale(1.05);
       }
 
       input[type="text"],
@@ -64,59 +69,11 @@
         margin-bottom: 20px;
         border: 1px solid #ccc;
         border-radius: 4px;
-        transition: border-color 0.3s;
-      }
-
-      input[type="text"]:focus,
-      input[type="number"]:focus,
-      select:focus {
-        border-color: #28a745; /* Change border color on focus */
       }
 
       .error {
         color: red;
         font-size: 14px;
-        margin-top: -15px;
-        margin-bottom: 15px;
-      }
-
-      .summary {
-        margin-top: 20px;
-        padding: 10px;
-        background-color: #e9ecef;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        display: none; /* Initially hidden */
-      }
-
-      /* Video styles */
-      .video-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 300px;
-        height: 200px;
-        overflow: hidden;
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-        animation: slideIn 1s forwards; /* Slide-in animation */
-      }
-
-      @keyframes slideIn {
-        from {
-          transform: translateY(100px); /* Start from below */
-          opacity: 0; /* Start invisible */
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1; /* Fade in */
-        }
-      }
-
-      iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
       }
     </style>
   </head>
@@ -148,7 +105,7 @@
 
         <div class="form-group">
           <label for="amenities">Preferred Amenities:</label>
-          <select id="amenities" name="amenities" required >
+          <select id="amenities" name="amenities" required>
             <option value="wifi">WiFi</option>
             <option value="ac">Air Conditioning</option>
             <option value="parking">Parking</option>
@@ -160,66 +117,41 @@
           </select>
         </div>
 
-        <div class="error" id="amenitiesError" style="display: none">
-          Please select at least one amenity.
-        </div>
-
         <div class="form-group">
-          <label for="bathroomSize"> No.of Bathroom required:</label>
-          <input
-            type="number"
-            id="bathroomSize"
-            name="bedrooms"
-            min="1"
-            max="10"
-            placeholder="Enter size in sq.ft"
-            required
-          />
+          <label for="bathroomSize">No. of Bathrooms Required:</label>
+          <input type="number" id="bathroomSize" name="bathroomSize" min="1" max="10" required />
         </div>
 
         <div class="form-group">
           <label for="size">Room Size (in sq.ft):</label>
-          <input
-            type="number"
-            id="size"
-            name="size"
-            min="100"
-            max="5000"
-            placeholder="Enter size in sq.ft"
-            required
-          />
+          <input type="number" id="size" name="size" min="100" max="5000" required />
         </div>
 
         <div class="form-group">
           <label for="location">Preferred Location in Bangalore:</label>
           <select id="location" name="location" required>
             {% for location in locations %}
-              <option value={{location}}>{{ location }}</option>
+              <option value="{{ location }}">{{ location }}</option>
             {% endfor %}
           </select>
         </div>
 
-        
         <button type="submit">Predict</button>
-        
       </form>
 
-      <div  id="summary"></div>
-    </div>
-
-    <!-- Video Section -->
-    <div class="video-container">
-      <iframe
-        src="https://player.vimeo.com/video/226515745?autoplay=1&muted=1"
-        width="400"
-        height="700"
-        frameborder="0"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen
-      ></iframe>
+      <div id="summary"></div>
     </div>
 
     <script>
+      // Initialize Select2 for the location dropdown
+      $(document).ready(function() {
+        $('#location').select2({
+          placeholder: "Search and select your preferred location",
+          allowClear: true
+        });
+      });
+
+      // Handle form submission and fetch prediction result
       document.getElementById("real_estate_form").addEventListener("submit", async function (e) {
             e.preventDefault(); // Prevent form from submitting normally
             console.log("hi")
@@ -238,8 +170,7 @@
           });
           const result = await response.json();
           document.getElementById("summary").innerText =
-            "Predicted Price : " + "₹" + Math.abs(Math.round(result.predicted_price * 1000, 2))
-
+            "Predicted Price : " + "₹ " + Math.abs(result.predicted_price * 10000000).toFixed(2)
         });
     </script>
   </body>
