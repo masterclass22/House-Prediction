@@ -4,8 +4,6 @@ import joblib
 import pandas as pd
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-
 
 # Load the trained model
 model = joblib.load('modal/HouseModel.pkl')
@@ -15,10 +13,6 @@ locations = df['location'].dropna().unique().tolist()
 
 # Initialize FastAPI
 app = FastAPI()
-
-# Mount static files
-#app.mount("/static", StaticFiles(directory="static"), name="static")
-
 
 # Set up Jinja2 templates
 templates = Jinja2Templates(directory="templates")
